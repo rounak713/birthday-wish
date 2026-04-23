@@ -25,7 +25,7 @@ const deepMerge = (defaults, saved) => {
 };
 
 // Backend API URL — in dev it uses the Vite proxy, in prod set VITE_API_URL env var
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
 export const ConfigProvider = ({ children }) => {
   const [appConfig, setAppConfig] = useState(defaultConfig);
