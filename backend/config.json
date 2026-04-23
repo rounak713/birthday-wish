@@ -1,0 +1,98 @@
+{
+  "title": "Happy Birthday Krishnaaa! ❤️",
+  "colors": {
+    "primary": "#ff6b9d",
+    "secondary": "#c77dff",
+    "accent": "#ffbe0b",
+    "background": "#0f0c1e",
+    "text": "#ffffff",
+    "heart": "#ff4d88"
+  },
+  "passcode": {
+    "pin": "2430",
+    "title": "Entre a passcode",
+    "errorMessage": "Oops! Wrong passcode 🥺",
+    "photoUrl": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&q=80",
+    "photoCaption": ""
+  },
+  "sounds": {
+    "backgroundMusic": "/b.mp3",
+    "click": "https://actions.google.com/sounds/v1/ui/pop_click.ogg",
+    "unwrap": "https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg",
+    "error": "https://actions.google.com/sounds/v1/cartoon/cartoon_cowbell.ogg",
+    "blow": "https://actions.google.com/sounds/v1/water/air_release.ogg",
+    "chime": "https://actions.google.com/sounds/v1/magic/magical_ping.ogg",
+    "swoosh": "https://actions.google.com/sounds/v1/cartoon/whoosh_swish_high.ogg"
+  },
+  "welcome": {
+    "title": "Happy Birthday Krishnaaa! ❤️",
+    "subtitle": "I made this little surprise just for you...",
+    "buttonText": "Let's Go!"
+  },
+  "trap": {
+    "title": "Wait a minute...",
+    "message": "Are you really ready for this, Krishnaaa? 😤",
+    "buttonText": "I'm ready, I promise!"
+  },
+  "gifts": {
+    "title": "Pick a gift! 🎁",
+    "items": [
+      {
+        "id": 1,
+        "title": "Message",
+        "content": "Krishnaaa, you are the sweetest person I know! Every day with you is a blessing. 💕",
+        "icon": "Mail"
+      },
+      {
+        "id": 2,
+        "title": "Memory",
+        "content": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&q=80",
+        "isImage": true,
+        "icon": "Camera"
+      },
+      {
+        "id": 3,
+        "title": "Funny",
+        "content": "I love you more than pizza! And you know how much I love pizza. 🍕",
+        "icon": "Smile"
+      }
+    ],
+    "continueButtonText": "Next Surprise"
+  },
+  "cake": {
+    "title": "Make a wish, Krishnaaa! ✨",
+    "instruction": "Tap the candles to blow them out!",
+    "buttonText": "Open your eyes"
+  },
+  "happyBirthday": {
+    "backgroundImage": "",
+    "photo1": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&q=80",
+    "photo2": "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&q=80",
+    "snoopyImage": ""
+  },
+  "memories": {
+    "title": "I MISS US",
+    "subtitle": "TOGETHER",
+    "backgroundImage": "https://www.transparenttextures.com/patterns/stardust.png",
+    "photos": [
+      {
+        "url": "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=500&q=80",
+        "caption": "Our first trip ✈️"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&q=80",
+        "caption": "That funny day 😂"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&q=80",
+        "caption": "Always together 💕"
+      }
+    ],
+    "buttonText": "One last thing..."
+  },
+  "final": {
+    "title": "Happy Birthday Krishnaaa, my love! 🎉",
+    "message": "Krishnaaa, thank you for being the amazing person you are. I hope this little website brought a smile to your face. Here's to many more birthdays together! I love you so much! ❤️",
+    "replayButtonText": "Replay Experience"
+  }
+}
