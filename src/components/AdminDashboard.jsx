@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfig } from '../hooks/useConfig';
-import { Save, RefreshCw, X, Image as ImageIcon, Music, Settings, CheckCircle, Play, Square } from 'lucide-react';
+import { Save, RefreshCw, X, Image as ImageIcon, Music, Settings, CheckCircle, Play, Square, MessageSquare, Download } from 'lucide-react';
 import { useSound } from './SoundContext';
 
 const compressImage = (file, callback) => {
@@ -43,6 +43,30 @@ const AdminDashboard = ({ onExit }) => {
     passcodeTitle: config.passcode?.title || '',
     welcomeTitle: config.welcome?.title || '',
     trapTitle: config.trap?.title || '',
+    welcomeSubtitle: config.welcome?.subtitle || '',
+    trapMessage: config.trap?.message || '',
+    cakeInstruction: config.cake?.instruction || '',
+    finalTitle: config.final?.title || '',
+    finalMessage: config.final?.message || '',
+
+    // All additional texts
+    passcodeErrorMessage: config.passcode?.errorMessage || '',
+    welcomeButton: config.welcome?.buttonText || '',
+    trapButton: config.trap?.buttonText || '',
+    giftTitle: config.gifts?.title || '',
+    gift1Content: config.gifts?.items?.[0]?.content || '',
+    gift2Url: config.gifts?.items?.[1]?.content || '',
+    gift3Content: config.gifts?.items?.[2]?.content || '',
+    giftButton: config.gifts?.continueButtonText || '',
+    cakeTitle: config.cake?.title || '',
+    cakeButton: config.cake?.buttonText || '',
+    memoryTitle: config.memories?.title || '',
+    memorySubtitle: config.memories?.subtitle || '',
+    memory1Caption: config.memories?.photos?.[0]?.caption || '',
+    memory2Caption: config.memories?.photos?.[1]?.caption || '',
+    memory3Caption: config.memories?.photos?.[2]?.caption || '',
+    memoryButton: config.memories?.buttonText || '',
+    finalButton: config.final?.replayButtonText || '',
     
     // Images
     passcodePhoto: config.passcode?.photoUrl || '',
@@ -76,6 +100,40 @@ const AdminDashboard = ({ onExit }) => {
 
     if (!newConfig.trap) newConfig.trap = {};
     newConfig.trap.title = formData.trapTitle;
+
+    newConfig.welcome.subtitle = formData.welcomeSubtitle;
+    newConfig.trap.message = formData.trapMessage;
+    if (!newConfig.cake) newConfig.cake = {};
+    newConfig.cake.instruction = formData.cakeInstruction;
+    if (!newConfig.final) newConfig.final = {};
+    newConfig.final.title = formData.finalTitle;
+    newConfig.final.message = formData.finalMessage;
+
+    newConfig.passcode.errorMessage = formData.passcodeErrorMessage;
+    newConfig.welcome.buttonText = formData.welcomeButton;
+    newConfig.trap.buttonText = formData.trapButton;
+    
+    if (newConfig.gifts && newConfig.gifts.items && newConfig.gifts.items.length >= 3) {
+      newConfig.gifts.title = formData.giftTitle;
+      newConfig.gifts.continueButtonText = formData.giftButton;
+      newConfig.gifts.items[0].content = formData.gift1Content;
+      newConfig.gifts.items[1].content = formData.gift2Url;
+      newConfig.gifts.items[2].content = formData.gift3Content;
+    }
+
+    newConfig.cake.title = formData.cakeTitle;
+    newConfig.cake.buttonText = formData.cakeButton;
+
+    if (newConfig.memories && newConfig.memories.photos && newConfig.memories.photos.length >= 3) {
+      newConfig.memories.title = formData.memoryTitle;
+      newConfig.memories.subtitle = formData.memorySubtitle;
+      newConfig.memories.buttonText = formData.memoryButton;
+      newConfig.memories.photos[0].caption = formData.memory1Caption;
+      newConfig.memories.photos[1].caption = formData.memory2Caption;
+      newConfig.memories.photos[2].caption = formData.memory3Caption;
+    }
+
+    newConfig.final.replayButtonText = formData.finalButton;
 
     newConfig.passcode.photoUrl = formData.passcodePhoto;
     newConfig.welcome.image = formData.welcomeImage;
@@ -122,6 +180,19 @@ const AdminDashboard = ({ onExit }) => {
       playMusic();
       setIsPlayingTest(true);
     }
+  };
+
+  const handleExport = () => {
+    const exportContent = `export const config = ${JSON.stringify(config, null, 2)};\n`;
+    const blob = new Blob([exportContent], { type: 'application/javascript' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'config.js';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const renderTabButton = (id, label, Icon) => (
@@ -282,7 +353,8 @@ const AdminDashboard = ({ onExit }) => {
 
         {/* Tab Navigation */}
         <div style={{ display: 'flex', gap: '12px', padding: '20px 32px', background: 'rgba(0,0,0,0.2)' }}>
-          {renderTabButton('general', 'General', Settings)}
+          {renderTabButton('general', 'Titles', Settings)}
+          {renderTabButton('messages', 'All Text', MessageSquare)}
           {renderTabButton('images', 'Images', ImageIcon)}
           {renderTabButton('audio', 'Music', Music)}
         </div>
@@ -298,6 +370,70 @@ const AdminDashboard = ({ onExit }) => {
                 <InputField label="Passcode Screen Title" name="passcodeTitle" placeholder="Enter your pin..." />
                 <InputField label="Welcome Screen Title" name="welcomeTitle" placeholder="Are you ready?" />
                 <InputField label="Trap Screen Title" name="trapTitle" placeholder="HOW DARE YOU!" />
+              </motion.div>
+            )}
+
+            {activeTab === 'messages' && (
+              <motion.div key="messages" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+                <h3 style={{ marginBottom: '24px', color: '#ffffff', fontFamily: "'Playfair Display', serif", fontSize: '1.4rem' }}>Main Texts & Buttons</h3>
+                
+                <h4 style={{ color: '#ff6b9d', marginTop: '20px', marginBottom: '10px' }}>Passcode & Welcome Screens</h4>
+                <InputField label="Passcode Error Message" name="passcodeErrorMessage" />
+                <InputField label="Welcome Subtitle" name="welcomeSubtitle" />
+                <InputField label="Welcome Button Text" name="welcomeButton" />
+                
+                <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Trap Screen</h4>
+                <InputField label="Trap Message" name="trapMessage" />
+                <InputField label="Trap Button Text" name="trapButton" />
+
+                <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Gifts Screen</h4>
+                <InputField label="Gifts Section Title" name="giftTitle" />
+                <InputField label="Gift 1 Message (Letter)" name="gift1Content" />
+                <ImageInput label="Gift 2 Photo (Camera)" name="gift2Url" placeholder="Drag photo here..." />
+                <InputField label="Gift 3 Funny Quote" name="gift3Content" />
+                <InputField label="Next Button Text" name="giftButton" />
+
+                <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Cake Screen</h4>
+                <InputField label="Cake Screen Title" name="cakeTitle" />
+                <InputField label="Cake Instruction" name="cakeInstruction" />
+                <InputField label="Cake Button Text" name="cakeButton" />
+
+                <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Memories Screen</h4>
+                <InputField label="Memories Main Title" name="memoryTitle" />
+                <InputField label="Memories Subtitle" name="memorySubtitle" />
+                <InputField label="Photo 1 Caption" name="memory1Caption" />
+                <InputField label="Photo 2 Caption" name="memory2Caption" />
+                <InputField label="Photo 3 Caption" name="memory3Caption" />
+                <InputField label="Continue Button Text" name="memoryButton" />
+
+                <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Final Details</h4>
+                <InputField label="Final Screen Title" name="finalTitle" />
+                <InputField label="Replay Button Text" name="finalButton" />
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Final Heartfelt Message</label>
+                  <textarea 
+                    name="finalMessage" 
+                    value={formData.finalMessage} 
+                    onChange={handleChange} 
+                    rows={4}
+                    placeholder="Write a sweet message..."
+                    style={{ 
+                      width: '100%', 
+                      padding: '14px 16px', 
+                      borderRadius: '12px', 
+                      border: '1px solid rgba(255,255,255,0.1)', 
+                      background: 'rgba(0,0,0,0.2)',
+                      color: '#ffffff',
+                      fontSize: '1rem',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                      fontFamily: "'Inter', sans-serif"
+                    }} 
+                    onFocus={(e) => e.target.style.borderColor = '#ff6b9d'}
+                    onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  />
+                </div>
               </motion.div>
             )}
 
@@ -367,6 +503,21 @@ const AdminDashboard = ({ onExit }) => {
             }}
           >
             {showSuccess ? <><CheckCircle size={20} /> Saved successfully!</> : <><Save size={20} /> Save Changes</>}
+          </button>
+          
+          <button 
+            onClick={handleExport}
+            style={{ 
+              padding: '16px 24px', background: 'transparent', color: '#0099ff', 
+              border: '1px solid rgba(0,153,255,0.3)', borderRadius: '12px', fontSize: '0.95rem', 
+              fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', 
+              justifyContent: 'center', gap: '8px', transition: 'all 0.2s'
+            }}
+            onMouseOver={e => { e.currentTarget.style.background = 'rgba(0,153,255,0.1)'; e.currentTarget.style.borderColor = '#0099ff'; }}
+            onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(0,153,255,0.3)'; }}
+            title="Export config for Vercel deployment"
+          >
+            <Download size={18} /> <span className="hide-on-mobile">Export config.js</span>
           </button>
           
           <button 
