@@ -35,28 +35,16 @@ export const ConfigProvider = ({ children }) => {
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/config`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Object.keys(data).length > 0) {
-            setAppConfig(deepMerge(defaultConfig, data));
-          }
+        const res = await fetch(`${API_URL}/api/config`, { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error(`Failed to load config: ${res.status}`);
+        }
+        const data = await res.json();
+        if (data && Object.keys(data).length > 0) {
+          setAppConfig(deepMerge(defaultConfig, data));
         }
       } catch (e) {
-        // Backend not available — fallback to localStorage
-        console.warn('Backend not available, using localStorage fallback:', e.message);
-        try {
-          const saved = localStorage.getItem('birthday_config');
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            if (parsed?.sounds?.backgroundMusic?.includes('drive.google.com')) {
-              parsed.sounds.backgroundMusic = '/b.mp3';
-            }
-            setAppConfig(deepMerge(defaultConfig, parsed));
-          }
-        } catch (localErr) {
-          console.error('localStorage fallback also failed:', localErr);
-        }
+        console.error('Database config load failed. Using bundled defaults only:', e.message);
       } finally {
         setIsLoaded(true);
       }
@@ -66,12 +54,6 @@ export const ConfigProvider = ({ children }) => {
   }, []);
 
   const updateConfig = async (newConfig) => {
-    setAppConfig(newConfig);
-
-    // Always save locally as instant fallback
-    localStorage.setItem('birthday_config', JSON.stringify(newConfig));
-
-    // Also push to backend so all devices get the update
     try {
       const res = await fetch(`${API_URL}/api/config`, {
         method: 'POST',
@@ -79,23 +61,28 @@ export const ConfigProvider = ({ children }) => {
         body: JSON.stringify(newConfig),
       });
       if (!res.ok) throw new Error('Backend returned error');
+      setAppConfig(newConfig);
       console.log('✅ Config synced to backend successfully');
+      return { synced: true };
     } catch (e) {
-      console.warn('⚠️ Backend sync failed, config only saved locally:', e.message);
+      console.warn('⚠️ Backend sync failed, config not persisted:', e.message);
+      return { synced: false, error: e.message };
     }
   };
 
   const resetConfig = async () => {
-    setAppConfig(defaultConfig);
-    localStorage.removeItem('birthday_config');
     try {
-      await fetch(`${API_URL}/api/config`, {
+      const res = await fetch(`${API_URL}/api/config`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(defaultConfig),
       });
+      if (!res.ok) throw new Error('Backend returned error');
+      setAppConfig(defaultConfig);
+      return { synced: true };
     } catch (e) {
       console.warn('Could not reset backend config:', e.message);
+      return { synced: false, error: e.message };
     }
   };
 

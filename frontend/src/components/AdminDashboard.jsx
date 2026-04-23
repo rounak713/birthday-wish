@@ -65,6 +65,9 @@ const AdminDashboard = ({ onExit }) => {
     memory1Caption: config.memories?.photos?.[0]?.caption || '',
     memory2Caption: config.memories?.photos?.[1]?.caption || '',
     memory3Caption: config.memories?.photos?.[2]?.caption || '',
+    memory1Photo: config.memories?.photos?.[0]?.url || '',
+    memory2Photo: config.memories?.photos?.[1]?.url || '',
+    memory3Photo: config.memories?.photos?.[2]?.url || '',
     memoryButton: config.memories?.buttonText || '',
     finalButton: config.final?.replayButtonText || '',
     
@@ -88,7 +91,7 @@ const AdminDashboard = ({ onExit }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const newConfig = JSON.parse(JSON.stringify(config));
     
     if (!newConfig.passcode) newConfig.passcode = {};
@@ -124,14 +127,20 @@ const AdminDashboard = ({ onExit }) => {
     newConfig.cake.title = formData.cakeTitle;
     newConfig.cake.buttonText = formData.cakeButton;
 
-    if (newConfig.memories && newConfig.memories.photos && newConfig.memories.photos.length >= 3) {
-      newConfig.memories.title = formData.memoryTitle;
-      newConfig.memories.subtitle = formData.memorySubtitle;
-      newConfig.memories.buttonText = formData.memoryButton;
-      newConfig.memories.photos[0].caption = formData.memory1Caption;
-      newConfig.memories.photos[1].caption = formData.memory2Caption;
-      newConfig.memories.photos[2].caption = formData.memory3Caption;
+    if (!newConfig.memories) newConfig.memories = {};
+    if (!Array.isArray(newConfig.memories.photos)) newConfig.memories.photos = [];
+    while (newConfig.memories.photos.length < 3) {
+      newConfig.memories.photos.push({ url: '', caption: '' });
     }
+    newConfig.memories.title = formData.memoryTitle;
+    newConfig.memories.subtitle = formData.memorySubtitle;
+    newConfig.memories.buttonText = formData.memoryButton;
+    newConfig.memories.photos[0].url = formData.memory1Photo;
+    newConfig.memories.photos[1].url = formData.memory2Photo;
+    newConfig.memories.photos[2].url = formData.memory3Photo;
+    newConfig.memories.photos[0].caption = formData.memory1Caption;
+    newConfig.memories.photos[1].caption = formData.memory2Caption;
+    newConfig.memories.photos[2].caption = formData.memory3Caption;
 
     newConfig.final.replayButtonText = formData.finalButton;
 
@@ -153,16 +162,23 @@ const AdminDashboard = ({ onExit }) => {
     if (!newConfig.sounds) newConfig.sounds = {};
     newConfig.sounds.backgroundMusic = formData.bgMusic;
 
-    updateConfig(newConfig);
-    
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
+    const saveResult = await updateConfig(newConfig);
+    if (saveResult?.synced) {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    } else {
+      window.alert('Saved locally, but failed to save to database. Please check backend/API URL and try again.');
+    }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (window.confirm("Are you sure you want to reset ALL configurations to the factory defaults?")) {
-      resetConfig();
-      onExit();
+      const resetResult = await resetConfig();
+      if (resetResult?.synced) {
+        onExit();
+      } else {
+        window.alert('Reset failed because database could not be updated. Please try again.');
+      }
     }
   };
 
@@ -451,6 +467,10 @@ const AdminDashboard = ({ onExit }) => {
                 <ImageInput label="Happy Birthday Photo 2 (Bottom Right)" name="hbPhoto2" placeholder="https://..." />
                 <ImageInput label="Snoopy Character Image (Transparent PNG)" name="hbSnoopy" placeholder="Leave blank for default" />
                 <ImageInput label="Memory Screen Background (Kiss marks)" name="memoryBg" placeholder="https://..." />
+                <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Memory Screen Photos</h4>
+                <ImageInput label="Memory Photo 1 (Left Polaroid)" name="memory1Photo" placeholder="https://..." />
+                <ImageInput label="Memory Photo 2 (Middle Polaroid)" name="memory2Photo" placeholder="https://..." />
+                <ImageInput label="Memory Photo 3 (Right Polaroid)" name="memory3Photo" placeholder="https://..." />
               </motion.div>
             )}
 

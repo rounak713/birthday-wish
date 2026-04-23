@@ -140,7 +140,7 @@ const MemoryScreen = ({ onNext }) => {
           zIndex: 10
         }}
       >
-        NEXT
+        {config.memories.buttonText || 'NEXT'}
       </motion.button>
     </motion.div>
   );
