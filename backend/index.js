@@ -9,9 +9,17 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
+// Supabase Postgres connection string can be provided with either variable
+const DATABASE_URL = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
+
+if (!DATABASE_URL) {
+  console.error('Missing database connection string. Set DATABASE_URL (or SUPABASE_DB_URL).');
+  process.exit(1);
+}
+
 // Supabase Connection
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
