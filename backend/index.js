@@ -1,11 +1,54 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const { Pool } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const CONFIG_FILE = path.join(__dirname, 'config.json');
+
+// Supabase Connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+// Database Initialization
+const initDb = async () => {
+  try {
+    // Create table if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        id SERIAL PRIMARY KEY,
+        config JSONB NOT NULL
+      );
+    `);
+
+    // Check if we have any config
+    const res = await pool.query('SELECT * FROM site_settings WHERE id = 1');
+    if (res.rows.length === 0) {
+      console.log('📦 Database is empty. Seeding from config.json...');
+      let initialConfig = {};
+      if (fs.existsSync(CONFIG_FILE)) {
+        try {
+          initialConfig = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+        } catch (parseError) {
+          console.error('Error parsing config.json:', parseError);
+        }
+      }
+      await pool.query('INSERT INTO site_settings (id, config) VALUES (1, $1)', [initialConfig]);
+      console.log('✅ Database seeded successfully.');
+    }
+  } catch (err) {
+    console.error('❌ Error initializing database:', err);
+  }
+};
+
+initDb();
 
 // Allow requests from the frontend (local or Vercel)
 app.use(cors({
@@ -18,40 +61,44 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 
 // ─── GET /api/config ──────────────────────────────────────────────────────────
-// Returns the current saved config
-app.get('/api/config', (req, res) => {
+// Returns the current saved config from the database
+app.get('/api/config', async (req, res) => {
   try {
-    if (!fs.existsSync(CONFIG_FILE)) {
+    const result = await pool.query('SELECT config FROM site_settings WHERE id = 1');
+    if (result.rows.length === 0) {
       return res.json({});
     }
-    const raw = fs.readFileSync(CONFIG_FILE, 'utf-8');
-    const config = JSON.parse(raw);
-    res.json(config);
+    res.json(result.rows[0].config);
   } catch (e) {
-    console.error('Error reading config:', e);
-    res.status(500).json({ error: 'Failed to read config' });
+    console.error('Error reading config from DB:', e);
+    res.status(500).json({ error: 'Failed to read config from database' });
   }
 });
 
 // ─── POST /api/config ─────────────────────────────────────────────────────────
-// Saves the new config sent by the admin dashboard
-app.post('/api/config', (req, res) => {
+// Saves the new config sent by the admin dashboard to the database
+app.post('/api/config', async (req, res) => {
   try {
     const newConfig = req.body;
     if (!newConfig || typeof newConfig !== 'object') {
       return res.status(400).json({ error: 'Invalid config data' });
     }
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(newConfig, null, 2), 'utf-8');
-    console.log('Config saved successfully at', new Date().toISOString());
+    
+    await pool.query(
+      'INSERT INTO site_settings (id, config) VALUES (1, $1) ON CONFLICT (id) DO UPDATE SET config = $1',
+      [newConfig]
+    );
+
+    console.log('Config saved to database at', new Date().toISOString());
     res.json({ success: true, savedAt: new Date().toISOString() });
   } catch (e) {
-    console.error('Error saving config:', e);
-    res.status(500).json({ error: 'Failed to save config' });
+    console.error('Error saving config to DB:', e);
+    res.status(500).json({ error: 'Failed to save config to database' });
   }
 });
 
 // Health check
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => res.json({ status: 'ok', database: 'connected' }));
 
 app.listen(PORT, () => {
   console.log(`🎂 Birthday Wish Backend running on http://localhost:${PORT}`);
