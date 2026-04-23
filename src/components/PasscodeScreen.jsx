@@ -54,7 +54,7 @@ const PasscodeScreen = ({ onNext, onAdmin }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 0.7 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 120, mass: 0.8 }}
       style={{
         position: 'fixed',
         inset: 0,

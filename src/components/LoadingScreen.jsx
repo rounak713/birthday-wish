@@ -36,7 +36,7 @@ const LoadingScreen = ({ onComplete }) => {
   return (
     <motion.div
       exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 0.9 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 120, mass: 0.8 }}
       style={{
         position: 'fixed',
         inset: 0,

@@ -4,6 +4,32 @@ import { useConfig } from '../hooks/useConfig';
 import { Save, RefreshCw, X, Image as ImageIcon, Music, Settings, CheckCircle, Play, Square } from 'lucide-react';
 import { useSound } from './SoundContext';
 
+const compressImage = (file, callback) => {
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 1000;
+      const MAX_HEIGHT = 1000;
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+      } else {
+        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+      }
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      callback(canvas.toDataURL('image/jpeg', 0.8));
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
 const AdminDashboard = ({ onExit }) => {
   const { config, updateConfig, resetConfig } = useConfig();
   const { playMusic, stopMusic } = useSound();
@@ -151,10 +177,28 @@ const AdminDashboard = ({ onExit }) => {
   );
 
   const ImageInput = ({ label, name, placeholder }) => (
-    <div style={{ marginBottom: '24px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-      <label style={{ display: 'block', fontWeight: '600', marginBottom: '12px', color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>{label}</label>
+    <div 
+      onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c77dff'; e.currentTarget.style.background = 'rgba(199, 125, 255, 0.1)'; }}
+      onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+      onDrop={(e) => {
+        e.preventDefault();
+        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          compressImage(file, (dataUrl) => {
+            setFormData(prev => ({ ...prev, [name]: dataUrl }));
+          });
+        }
+      }}
+      style={{ marginBottom: '24px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.3s' }}
+    >
+      <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600', marginBottom: '12px', color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
+        <span>{label}</span>
+        <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 'normal' }}>Drag & Drop file</span>
+      </label>
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, position: 'relative' }}>
           <input 
             type="text" 
             name={name} 

@@ -61,7 +61,7 @@ const FinalScreen = ({ onReset }) => {
     <motion.div
       initial={{ opacity: 0, scale: 0.92 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 120, mass: 0.8 }}
       style={{
         position: 'fixed',
         inset: 0,
