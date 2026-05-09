@@ -275,7 +275,7 @@ const CakeScreen = ({ onNext }) => {
                   fontSize: '1rem',
                   color: 'rgba(255,255,255,0.9)',
                   letterSpacing: '0.05em',
-                }}>Happy Birthday!</span>
+                }}>{config.cake?.message || 'Happy Celebration!'}</span>
               </div>
               {/* Plate */}
               <div style={{

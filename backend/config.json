@@ -1,16 +1,16 @@
 {
-  "title": "Happy Birthday Krishnaaa! ❤️",
+  "title": "A Special Surprise For You! ❤️",
   "colors": {
-    "primary": "#ff6b9d",
-    "secondary": "#c77dff",
-    "accent": "#ffbe0b",
-    "background": "#0f0c1e",
+    "primary": "#ff758f",
+    "secondary": "#8338ec",
+    "accent": "#ffb703",
+    "background": "#02010a",
     "text": "#ffffff",
-    "heart": "#ff4d88"
+    "heart": "#ff006e"
   },
   "passcode": {
     "pin": "2430",
-    "title": "Entre a passcode",
+    "title": "Enter the passcode",
     "errorMessage": "Oops! Wrong passcode 🥺",
     "photoUrl": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&q=80",
     "photoCaption": ""
@@ -25,13 +25,13 @@
     "swoosh": "https://actions.google.com/sounds/v1/cartoon/whoosh_swish_high.ogg"
   },
   "welcome": {
-    "title": "Happy Birthday Krishnaaa! ❤️",
-    "subtitle": "I made this little surprise just for you...",
+    "title": "A Special Surprise For You! ❤️",
+    "subtitle": "I made this little something just for you...",
     "buttonText": "Let's Go!"
   },
   "trap": {
     "title": "Wait a minute...",
-    "message": "Are you really ready for this, Krishnaaa? 😤",
+    "message": "Are you really ready for this? 😤",
     "buttonText": "I'm ready, I promise!"
   },
   "gifts": {
@@ -40,7 +40,7 @@
       {
         "id": 1,
         "title": "Message",
-        "content": "Krishnaaa, you are the sweetest person I know! Every day with you is a blessing. 💕",
+        "content": "You are the sweetest person I know! Every day with you is a blessing. 💕",
         "icon": "Mail"
       },
       {
@@ -60,11 +60,13 @@
     "continueButtonText": "Next Surprise"
   },
   "cake": {
-    "title": "Make a wish, Krishnaaa! ✨",
+    "title": "Make a wish! ✨",
     "instruction": "Tap the candles to blow them out!",
-    "buttonText": "Open your eyes"
+    "buttonText": "Open your eyes",
+    "message": "Happy Celebration!"
   },
   "happyBirthday": {
+    "title": "HAPPY\nDAY",
     "backgroundImage": "",
     "photo1": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&q=80",
     "photo2": "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&q=80",
@@ -91,8 +93,8 @@
     "buttonText": "One last thing..."
   },
   "final": {
-    "title": "Happy Birthday Krishnaaa, my love! 🎉",
-    "message": "Krishnaaa, thank you for being the amazing person you are. I hope this little website brought a smile to your face. Here's to many more birthdays together! I love you so much! ❤️",
+    "title": "Happy Celebration, my love! 🎉",
+    "message": "Thank you for being the amazing person you are. I hope this little website brought a smile to your face. Here's to many more special moments together! I love you so much! ❤️",
     "replayButtonText": "Replay Experience"
   }
 }

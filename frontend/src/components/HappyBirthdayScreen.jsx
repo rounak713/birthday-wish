@@ -70,9 +70,10 @@ const HappyBirthdayScreen = ({ onNext }) => {
           WebkitTextFillColor: 'transparent',
           filter: 'drop-shadow(0px 8px 4px rgba(0,0,0,0.3)) drop-shadow(0px -2px 2px rgba(255,255,255,0.8))',
           letterSpacing: '4px',
-          lineHeight: '1.2'
+          lineHeight: '1.2',
+          whiteSpace: 'pre-line'
         }}>
-          HAPPY<br/>BIRTHDAY
+          {(config.happyBirthday?.title || "HAPPY\nDAY").replace(/\\n/g, '\n')}
         </h1>
       </motion.div>
 

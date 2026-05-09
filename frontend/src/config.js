@@ -3,16 +3,16 @@ export const config = {
   // Replace these with your own words and photos!
 
   // 1. Website Title
-  title: "Happy Birthday Krishnaaa! ❤️",
+  title: "A Special Surprise For You! ❤️",
 
   // 2. Theme Colors
   colors: {
-    primary: "#ff6b9d",   // Pink
-    secondary: "#c77dff",   // Purple
-    accent: "#ffbe0b",   // Gold
-    background: "#0f0c1e",   // Dark deep navy
+    primary: "#ff758f",   // Vibrant rose pink
+    secondary: "#8338ec",   // Vibrant purple
+    accent: "#ffb703",   // Golden yellow
+    background: "#02010a",   // Deep midnight blue
     text: "#ffffff",   // White text
-    heart: "#ff4d88",   // Hot pink hearts
+    heart: "#ff006e",   // Hot pink hearts
   },
 
   // 3. Passcode Screen
@@ -20,7 +20,7 @@ export const config = {
     // The correct 4-digit PIN
     pin: "2430",
     // Text displayed above the keypad
-    title: "Entre a passcode",
+    title: "Enter the passcode",
     // Error message shown when wrong
     errorMessage: "Oops! Wrong passcode 🥺",
     // The photo displayed on the left side of the screen
@@ -49,15 +49,15 @@ export const config = {
 
   // 5. Welcome Screen
   welcome: {
-    title: "Happy Birthday Krishnaaa! ❤️",
-    subtitle: "I made this little surprise just for you...",
+    title: "A Special Surprise For You! ❤️",
+    subtitle: "I made this little something just for you...",
     buttonText: "Let's Go!",
   },
 
   // 6. Trap Screen
   trap: {
     title: "Wait a minute...",
-    message: "Are you really ready for this, Krishnaaa? 😤",
+    message: "Are you really ready for this? 😤",
     buttonText: "I'm ready, I promise!",
   },
 
@@ -68,7 +68,7 @@ export const config = {
       {
         id: 1,
         title: "Message",
-        content: "Krishnaaa, you are the sweetest person I know! Every day with you is a blessing. 💕",
+        content: "You are the sweetest person I know! Every day with you is a blessing. 💕",
         icon: "Mail",
       },
       {
@@ -91,13 +91,15 @@ export const config = {
 
   // 8. Cake Screen
   cake: {
-    title: "Make a wish, Krishnaaa! ✨",
+    title: "Make a wish! ✨",
     instruction: "Tap the candles to blow them out!",
     buttonText: "Open your eyes",
+    message: "Happy Celebration!",
   },
 
-  // 9. Happy Birthday Collage Screen (After Cake)
+  // 9. Celebration Collage Screen (After Cake)
   happyBirthday: {
+    title: "HAPPY\nDAY",
     // You can upload your own collage background here
     backgroundImage: "",
     // The two polaroid photos
@@ -130,10 +132,10 @@ export const config = {
     buttonText: "One last thing...",
   },
 
-  // 10. Final Message Screen
+  // 11. Final Message Screen
   final: {
-    title: "Happy Birthday Krishnaaa, my love! 🎉",
-    message: "Krishnaaa, thank you for being the amazing person you are. I hope this little website brought a smile to your face. Here's to many more birthdays together! I love you so much! ❤️",
+    title: "Happy Celebration, my love! 🎉",
+    message: "Thank you for being the amazing person you are. I hope this little website brought a smile to your face. Here's to many more special moments together! I love you so much! ❤️",
     replayButtonText: "Replay Experience",
   },
 };

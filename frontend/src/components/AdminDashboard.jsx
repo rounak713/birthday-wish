@@ -30,6 +30,115 @@ const compressImage = (file, callback) => {
   reader.readAsDataURL(file);
 };
 
+const TabButton = ({ activeTab, setActiveTab, id, label, Icon }) => (
+  <button
+    onClick={() => setActiveTab(id)}
+    style={{
+      flex: 1,
+      padding: '12px',
+      background: activeTab === id ? 'rgba(255,107,157,0.2)' : 'rgba(255,255,255,0.05)',
+      color: activeTab === id ? '#ff6b9d' : 'rgba(255,255,255,0.6)',
+      border: `1px solid ${activeTab === id ? 'rgba(255,107,157,0.5)' : 'transparent'}`,
+      borderRadius: '12px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      transition: 'all 0.2s',
+      fontFamily: "'Inter', sans-serif"
+    }}
+  >
+    <Icon size={18} />
+    <span className="hide-on-mobile">{label}</span>
+  </button>
+);
+
+const InputField = ({ label, name, type = 'text', placeholder, formData, handleChange }) => (
+  <div style={{ marginBottom: '20px' }}>
+    <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>{label}</label>
+    <input 
+      type={type} 
+      name={name} 
+      value={formData[name] || ''} 
+      onChange={handleChange} 
+      placeholder={placeholder}
+      style={{ 
+        width: '100%', 
+        padding: '14px 16px', 
+        borderRadius: '12px', 
+        border: '1px solid rgba(255,255,255,0.1)', 
+        background: 'rgba(0,0,0,0.2)',
+        color: '#ffffff',
+        fontSize: '1rem',
+        outline: 'none',
+        transition: 'border-color 0.2s',
+        fontFamily: "'Inter', sans-serif"
+      }} 
+      onFocus={(e) => e.target.style.borderColor = '#ff6b9d'}
+      onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+    />
+  </div>
+);
+
+const ImageInput = ({ label, name, placeholder, formData, handleChange, setFormData }) => (
+  <div 
+    onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c77dff'; e.currentTarget.style.background = 'rgba(199, 125, 255, 0.1)'; }}
+    onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+    onDrop={(e) => {
+      e.preventDefault();
+      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+      e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        compressImage(file, (dataUrl) => {
+          setFormData(prev => ({ ...prev, [name]: dataUrl }));
+        });
+      }
+    }}
+    style={{ marginBottom: '24px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.3s' }}
+  >
+    <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600', marginBottom: '12px', color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
+      <span>{label}</span>
+      <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 'normal' }}>Drag & Drop file</span>
+    </label>
+    <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+      <div style={{ flex: 1, position: 'relative' }}>
+        <input 
+          type="text" 
+          name={name} 
+          value={formData[name] || ''} 
+          onChange={handleChange} 
+          placeholder={placeholder}
+          style={{ 
+            width: '100%', 
+            padding: '12px 16px', 
+            borderRadius: '10px', 
+            border: '1px solid rgba(255,255,255,0.1)', 
+            background: 'rgba(0,0,0,0.3)',
+            color: '#ffffff',
+            fontSize: '0.95rem',
+            outline: 'none',
+            fontFamily: "'Inter', sans-serif"
+          }} 
+          onFocus={(e) => e.target.style.borderColor = '#c77dff'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+        />
+      </div>
+      {formData[name] && (
+        <div style={{ 
+          width: 46, height: 46, borderRadius: '8px', overflow: 'hidden', 
+          background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+        }}>
+          <img src={formData[name]} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.style.display = 'none'} />
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 const AdminDashboard = ({ onExit }) => {
   const { config, updateConfig, resetConfig } = useConfig();
   const { playMusic, stopMusic } = useSound();
@@ -60,6 +169,7 @@ const AdminDashboard = ({ onExit }) => {
     giftButton: config.gifts?.continueButtonText || '',
     cakeTitle: config.cake?.title || '',
     cakeButton: config.cake?.buttonText || '',
+    cakeMessage: config.cake?.message || '',
     memoryTitle: config.memories?.title || '',
     memorySubtitle: config.memories?.subtitle || '',
     memory1Caption: config.memories?.photos?.[0]?.caption || '',
@@ -77,6 +187,7 @@ const AdminDashboard = ({ onExit }) => {
     trapImage: config.trap?.image || '',
     cakeImage: config.cake?.image || '',
     hbBg: config.happyBirthday?.backgroundImage || '',
+    hbTitle: config.happyBirthday?.title || '',
     hbPhoto1: config.happyBirthday?.photo1 || '',
     hbPhoto2: config.happyBirthday?.photo2 || '',
     hbSnoopy: config.happyBirthday?.snoopyImage || '',
@@ -126,6 +237,7 @@ const AdminDashboard = ({ onExit }) => {
 
     newConfig.cake.title = formData.cakeTitle;
     newConfig.cake.buttonText = formData.cakeButton;
+    newConfig.cake.message = formData.cakeMessage;
 
     if (!newConfig.memories) newConfig.memories = {};
     if (!Array.isArray(newConfig.memories.photos)) newConfig.memories.photos = [];
@@ -152,6 +264,7 @@ const AdminDashboard = ({ onExit }) => {
     
     if (!newConfig.happyBirthday) newConfig.happyBirthday = {};
     newConfig.happyBirthday.backgroundImage = formData.hbBg;
+    newConfig.happyBirthday.title = formData.hbTitle;
     newConfig.happyBirthday.photo1 = formData.hbPhoto1;
     newConfig.happyBirthday.photo2 = formData.hbPhoto2;
     newConfig.happyBirthday.snoopyImage = formData.hbSnoopy;
@@ -211,115 +324,6 @@ const AdminDashboard = ({ onExit }) => {
     URL.revokeObjectURL(url);
   };
 
-  const renderTabButton = (id, label, Icon) => (
-    <button
-      onClick={() => setActiveTab(id)}
-      style={{
-        flex: 1,
-        padding: '12px',
-        background: activeTab === id ? 'rgba(255,107,157,0.2)' : 'rgba(255,255,255,0.05)',
-        color: activeTab === id ? '#ff6b9d' : 'rgba(255,255,255,0.6)',
-        border: `1px solid ${activeTab === id ? 'rgba(255,107,157,0.5)' : 'transparent'}`,
-        borderRadius: '12px',
-        fontWeight: '600',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px',
-        transition: 'all 0.2s',
-        fontFamily: "'Inter', sans-serif"
-      }}
-    >
-      <Icon size={18} />
-      <span className="hide-on-mobile">{label}</span>
-    </button>
-  );
-
-  const InputField = ({ label, name, type = 'text', placeholder }) => (
-    <div style={{ marginBottom: '20px' }}>
-      <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>{label}</label>
-      <input 
-        type={type} 
-        name={name} 
-        value={formData[name]} 
-        onChange={handleChange} 
-        placeholder={placeholder}
-        style={{ 
-          width: '100%', 
-          padding: '14px 16px', 
-          borderRadius: '12px', 
-          border: '1px solid rgba(255,255,255,0.1)', 
-          background: 'rgba(0,0,0,0.2)',
-          color: '#ffffff',
-          fontSize: '1rem',
-          outline: 'none',
-          transition: 'border-color 0.2s',
-          fontFamily: "'Inter', sans-serif"
-        }} 
-        onFocus={(e) => e.target.style.borderColor = '#ff6b9d'}
-        onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-      />
-    </div>
-  );
-
-  const ImageInput = ({ label, name, placeholder }) => (
-    <div 
-      onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#c77dff'; e.currentTarget.style.background = 'rgba(199, 125, 255, 0.1)'; }}
-      onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
-      onDrop={(e) => {
-        e.preventDefault();
-        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-        const file = e.dataTransfer.files[0];
-        if (file) {
-          compressImage(file, (dataUrl) => {
-            setFormData(prev => ({ ...prev, [name]: dataUrl }));
-          });
-        }
-      }}
-      style={{ marginBottom: '24px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', transition: 'all 0.3s' }}
-    >
-      <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600', marginBottom: '12px', color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
-        <span>{label}</span>
-        <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 'normal' }}>Drag & Drop file</span>
-      </label>
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <input 
-            type="text" 
-            name={name} 
-            value={formData[name]} 
-            onChange={handleChange} 
-            placeholder={placeholder}
-            style={{ 
-              width: '100%', 
-              padding: '12px 16px', 
-              borderRadius: '10px', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              background: 'rgba(0,0,0,0.3)',
-              color: '#ffffff',
-              fontSize: '0.95rem',
-              outline: 'none',
-              fontFamily: "'Inter', sans-serif"
-            }} 
-            onFocus={(e) => e.target.style.borderColor = '#c77dff'}
-            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-          />
-        </div>
-        {formData[name] && (
-          <div style={{ 
-            width: 46, height: 46, borderRadius: '8px', overflow: 'hidden', 
-            background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-          }}>
-            <img src={formData[name]} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => e.target.style.display = 'none'} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -369,62 +373,66 @@ const AdminDashboard = ({ onExit }) => {
 
         {/* Tab Navigation */}
         <div style={{ display: 'flex', gap: '12px', padding: '20px 32px', background: 'rgba(0,0,0,0.2)' }}>
-          {renderTabButton('general', 'Titles', Settings)}
-          {renderTabButton('messages', 'All Text', MessageSquare)}
-          {renderTabButton('images', 'Images', ImageIcon)}
-          {renderTabButton('audio', 'Music', Music)}
+          <TabButton activeTab={activeTab} setActiveTab={setActiveTab} id="general" label="Titles" Icon={Settings} />
+          <TabButton activeTab={activeTab} setActiveTab={setActiveTab} id="messages" label="All Text" Icon={MessageSquare} />
+          <TabButton activeTab={activeTab} setActiveTab={setActiveTab} id="images" label="Images" Icon={ImageIcon} />
+          <TabButton activeTab={activeTab} setActiveTab={setActiveTab} id="audio" label="Music" Icon={Music} />
         </div>
 
         {/* Scrollable Content */}
-        <div style={{ padding: '24px 32px', overflowY: 'auto', flex: 1 }}>
+        <div style={{ padding: '24px 32px', overflowY: 'auto', flex: 1, minHeight: '500px' }}>
           <AnimatePresence mode="wait">
             {activeTab === 'general' && (
-              <motion.div key="general" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+              <motion.div key="general" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.15 }}>
                 <h3 style={{ marginBottom: '24px', color: '#ffffff', fontFamily: "'Playfair Display', serif", fontSize: '1.4rem' }}>Text & Passcode</h3>
                 
-                <InputField label="Secret PIN to Enter Site" name="passcodePin" placeholder="e.g. 1234" />
-                <InputField label="Passcode Screen Title" name="passcodeTitle" placeholder="Enter your pin..." />
-                <InputField label="Welcome Screen Title" name="welcomeTitle" placeholder="Are you ready?" />
-                <InputField label="Trap Screen Title" name="trapTitle" placeholder="HOW DARE YOU!" />
+                <InputField label="Secret PIN to Enter Site" name="passcodePin" placeholder="e.g. 1234"  formData={formData} handleChange={handleChange} />
+                <InputField label="Passcode Screen Title" name="passcodeTitle" placeholder="Enter your pin..."  formData={formData} handleChange={handleChange} />
+                <InputField label="Welcome Screen Title" name="welcomeTitle" placeholder="Are you ready?"  formData={formData} handleChange={handleChange} />
+                <InputField label="Trap Screen Title" name="trapTitle" placeholder="HOW DARE YOU!"  formData={formData} handleChange={handleChange} />
               </motion.div>
             )}
 
             {activeTab === 'messages' && (
-              <motion.div key="messages" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+              <motion.div key="messages" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.15 }}>
                 <h3 style={{ marginBottom: '24px', color: '#ffffff', fontFamily: "'Playfair Display', serif", fontSize: '1.4rem' }}>Main Texts & Buttons</h3>
                 
                 <h4 style={{ color: '#ff6b9d', marginTop: '20px', marginBottom: '10px' }}>Passcode & Welcome Screens</h4>
-                <InputField label="Passcode Error Message" name="passcodeErrorMessage" />
-                <InputField label="Welcome Subtitle" name="welcomeSubtitle" />
-                <InputField label="Welcome Button Text" name="welcomeButton" />
+                <InputField label="Passcode Error Message" name="passcodeErrorMessage"  formData={formData} handleChange={handleChange} />
+                <InputField label="Welcome Subtitle" name="welcomeSubtitle"  formData={formData} handleChange={handleChange} />
+                <InputField label="Welcome Button Text" name="welcomeButton"  formData={formData} handleChange={handleChange} />
                 
                 <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Trap Screen</h4>
-                <InputField label="Trap Message" name="trapMessage" />
-                <InputField label="Trap Button Text" name="trapButton" />
+                <InputField label="Trap Message" name="trapMessage"  formData={formData} handleChange={handleChange} />
+                <InputField label="Trap Button Text" name="trapButton"  formData={formData} handleChange={handleChange} />
 
                 <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Gifts Screen</h4>
-                <InputField label="Gifts Section Title" name="giftTitle" />
-                <InputField label="Gift 1 Message (Letter)" name="gift1Content" />
-                <ImageInput label="Gift 2 Photo (Camera)" name="gift2Url" placeholder="Drag photo here..." />
-                <InputField label="Gift 3 Funny Quote" name="gift3Content" />
-                <InputField label="Next Button Text" name="giftButton" />
+                <InputField label="Gifts Section Title" name="giftTitle"  formData={formData} handleChange={handleChange} />
+                <InputField label="Gift 1 Message (Letter)" name="gift1Content"  formData={formData} handleChange={handleChange} />
+                <ImageInput label="Gift 2 Photo (Camera)" name="gift2Url" placeholder="Drag photo here..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <InputField label="Gift 3 Funny Quote" name="gift3Content"  formData={formData} handleChange={handleChange} />
+                <InputField label="Next Button Text" name="giftButton"  formData={formData} handleChange={handleChange} />
 
                 <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Cake Screen</h4>
-                <InputField label="Cake Screen Title" name="cakeTitle" />
-                <InputField label="Cake Instruction" name="cakeInstruction" />
-                <InputField label="Cake Button Text" name="cakeButton" />
+                <InputField label="Cake Screen Title" name="cakeTitle"  formData={formData} handleChange={handleChange} />
+                <InputField label="Cake Instruction" name="cakeInstruction"  formData={formData} handleChange={handleChange} />
+                <InputField label="Cake Button Text" name="cakeButton"  formData={formData} handleChange={handleChange} />
+                <InputField label="Cake Extra Message" name="cakeMessage" placeholder="e.g. Happy Celebration!"  formData={formData} handleChange={handleChange} />
+
+                <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Celebration Screen</h4>
+                <InputField label="Celebration Foil Text (use \n for line break)" name="hbTitle" placeholder="HAPPY\nDAY"  formData={formData} handleChange={handleChange} />
 
                 <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Memories Screen</h4>
-                <InputField label="Memories Main Title" name="memoryTitle" />
-                <InputField label="Memories Subtitle" name="memorySubtitle" />
-                <InputField label="Photo 1 Caption" name="memory1Caption" />
-                <InputField label="Photo 2 Caption" name="memory2Caption" />
-                <InputField label="Photo 3 Caption" name="memory3Caption" />
-                <InputField label="Continue Button Text" name="memoryButton" />
+                <InputField label="Memories Main Title" name="memoryTitle"  formData={formData} handleChange={handleChange} />
+                <InputField label="Memories Subtitle" name="memorySubtitle"  formData={formData} handleChange={handleChange} />
+                <InputField label="Photo 1 Caption" name="memory1Caption"  formData={formData} handleChange={handleChange} />
+                <InputField label="Photo 2 Caption" name="memory2Caption"  formData={formData} handleChange={handleChange} />
+                <InputField label="Photo 3 Caption" name="memory3Caption"  formData={formData} handleChange={handleChange} />
+                <InputField label="Continue Button Text" name="memoryButton"  formData={formData} handleChange={handleChange} />
 
                 <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Final Details</h4>
-                <InputField label="Final Screen Title" name="finalTitle" />
-                <InputField label="Replay Button Text" name="finalButton" />
+                <InputField label="Final Screen Title" name="finalTitle"  formData={formData} handleChange={handleChange} />
+                <InputField label="Replay Button Text" name="finalButton"  formData={formData} handleChange={handleChange} />
                 
                 <div style={{ marginBottom: '20px' }}>
                   <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem' }}>Final Heartfelt Message</label>
@@ -454,28 +462,28 @@ const AdminDashboard = ({ onExit }) => {
             )}
 
             {activeTab === 'images' && (
-              <motion.div key="images" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+              <motion.div key="images" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.15 }}>
                 <h3 style={{ marginBottom: '24px', color: '#ffffff', fontFamily: "'Playfair Display', serif", fontSize: '1.4rem' }}>Media Links</h3>
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '24px', marginTop: '-16px' }}>Paste direct links ending in .jpg or .png</p>
                 
-                <ImageInput label="Passcode Polaroid Photo" name="passcodePhoto" placeholder="https://..." />
-                <ImageInput label="Welcome Screen Bear (Transparent PNG)" name="welcomeImage" placeholder="Leave blank for default" />
-                <ImageInput label="Trap Screen Bunny (Transparent PNG)" name="trapImage" placeholder="Leave blank for default" />
-                <ImageInput label="Cake Illustration (Transparent PNG)" name="cakeImage" placeholder="Leave blank for default" />
-                <ImageInput label="Happy Birthday Screen Background" name="hbBg" placeholder="https://..." />
-                <ImageInput label="Happy Birthday Photo 1 (Top Left)" name="hbPhoto1" placeholder="https://..." />
-                <ImageInput label="Happy Birthday Photo 2 (Bottom Right)" name="hbPhoto2" placeholder="https://..." />
-                <ImageInput label="Snoopy Character Image (Transparent PNG)" name="hbSnoopy" placeholder="Leave blank for default" />
-                <ImageInput label="Memory Screen Background (Kiss marks)" name="memoryBg" placeholder="https://..." />
+                <ImageInput label="Passcode Polaroid Photo" name="passcodePhoto" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Welcome Screen Bear (Transparent PNG)" name="welcomeImage" placeholder="Leave blank for default"  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Trap Screen Bunny (Transparent PNG)" name="trapImage" placeholder="Leave blank for default"  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Cake Illustration (Transparent PNG)" name="cakeImage" placeholder="Leave blank for default"  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Happy Birthday Screen Background" name="hbBg" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Happy Birthday Photo 1 (Top Left)" name="hbPhoto1" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Happy Birthday Photo 2 (Bottom Right)" name="hbPhoto2" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Snoopy Character Image (Transparent PNG)" name="hbSnoopy" placeholder="Leave blank for default"  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Memory Screen Background (Kiss marks)" name="memoryBg" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
                 <h4 style={{ color: '#ff6b9d', marginTop: '30px', marginBottom: '10px' }}>Memory Screen Photos</h4>
-                <ImageInput label="Memory Photo 1 (Left Polaroid)" name="memory1Photo" placeholder="https://..." />
-                <ImageInput label="Memory Photo 2 (Middle Polaroid)" name="memory2Photo" placeholder="https://..." />
-                <ImageInput label="Memory Photo 3 (Right Polaroid)" name="memory3Photo" placeholder="https://..." />
+                <ImageInput label="Memory Photo 1 (Left Polaroid)" name="memory1Photo" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Memory Photo 2 (Middle Polaroid)" name="memory2Photo" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
+                <ImageInput label="Memory Photo 3 (Right Polaroid)" name="memory3Photo" placeholder="https://..."  formData={formData} handleChange={handleChange} setFormData={setFormData} />
               </motion.div>
             )}
 
             {activeTab === 'audio' && (
-              <motion.div key="audio" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+              <motion.div key="audio" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.15 }}>
                 <h3 style={{ marginBottom: '24px', color: '#ffffff', fontFamily: "'Playfair Display', serif", fontSize: '1.4rem' }}>Background Music</h3>
                 
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
