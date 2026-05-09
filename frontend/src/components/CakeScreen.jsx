@@ -120,7 +120,8 @@ const CakeScreen = ({ onNext }) => {
           transform: 'translate(-50%,-50%)',
           width: 'clamp(300px, 50vw, 600px)', height: 'clamp(300px, 50vw, 600px)', borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(255,190,11,0.18) 0%, rgba(255,107,0,0.08) 50%, transparent 70%)',
-          filter: 'blur(40px)', pointerEvents: 'none',
+          filter: 'blur(30px)', pointerEvents: 'none',
+          willChange: 'transform, opacity'
         }}
       />
       <motion.div
@@ -131,7 +132,8 @@ const CakeScreen = ({ onNext }) => {
           transform: 'translate(-50%,-50%)',
           width: 'clamp(350px, 60vw, 700px)', height: 'clamp(350px, 60vw, 700px)', borderRadius: '50%',
           background: 'radial-gradient(circle, rgba(255,107,157,0.15) 0%, rgba(199,125,255,0.10) 50%, transparent 70%)',
-          filter: 'blur(60px)', pointerEvents: 'none',
+          filter: 'blur(40px)', pointerEvents: 'none',
+          willChange: 'transform, opacity'
         }}
       />
 

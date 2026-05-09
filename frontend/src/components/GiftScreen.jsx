@@ -68,13 +68,15 @@ const GiftScreen = ({ onNext }) => {
         position: 'absolute', left: '20%', top: '15%',
         width: 'clamp(250px, 45vw, 500px)', height: 'clamp(250px, 45vw, 500px)', borderRadius: '50%',
         background: 'radial-gradient(circle, rgba(255,190,11,0.10) 0%, transparent 70%)',
-        filter: 'blur(60px)', pointerEvents: 'none',
+        filter: 'blur(30px)', pointerEvents: 'none',
+        willChange: 'transform, opacity'
       }} />
       <div style={{
         position: 'absolute', right: '10%', bottom: '15%',
         width: 'clamp(200px, 35vw, 400px)', height: 'clamp(200px, 35vw, 400px)', borderRadius: '50%',
         background: 'radial-gradient(circle, rgba(199,125,255,0.10) 0%, transparent 70%)',
-        filter: 'blur(60px)', pointerEvents: 'none',
+        filter: 'blur(30px)', pointerEvents: 'none',
+        willChange: 'transform, opacity'
       }} />
 
       {/* Header */}

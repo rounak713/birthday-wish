@@ -1,17 +1,26 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const CustomCursor = () => {
-  const [pos, setPos] = useState({ x: -100, y: -100 });
-  const [trail, setTrail] = useState({ x: -100, y: -100 });
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  
+  const springConfig = { damping: 25, stiffness: 400, mass: 0.3 };
+  const smoothX = useSpring(cursorX, springConfig);
+  const smoothY = useSpring(cursorY, springConfig);
+
+  const trailConfig = { damping: 30, stiffness: 200, mass: 0.5 };
+  const trailX = useSpring(cursorX, trailConfig);
+  const trailY = useSpring(cursorY, trailConfig);
+
   const [isHovering, setIsHovering] = useState(false);
-  const [isPointer, setIsPointer] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
     const onMove = (e) => {
-      setPos({ x: e.clientX, y: e.clientY });
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
     };
 
     const onOver = (e) => {
@@ -23,7 +32,6 @@ const CustomCursor = () => {
         el.closest('a') ||
         window.getComputedStyle(el).cursor === 'pointer';
       setIsHovering(!!hoverable);
-      setIsPointer(!!hoverable);
     };
 
     window.addEventListener('mousemove', onMove);
@@ -32,13 +40,7 @@ const CustomCursor = () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseover', onOver);
     };
-  }, []);
-
-  // Trail follows more slowly
-  useEffect(() => {
-    const timeout = setTimeout(() => setTrail(pos), 60);
-    return () => clearTimeout(timeout);
-  }, [pos]);
+  }, [cursorX, cursorY]);
 
   if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) return null;
 
@@ -46,12 +48,12 @@ const CustomCursor = () => {
     <>
       {/* Trail dot */}
       <motion.div
-        animate={{ x: trail.x - 4, y: trail.y - 4, opacity: isHovering ? 0 : 0.4 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 25, mass: 0.3 }}
         style={{
+          x: trailX,
+          y: trailY,
           position: 'fixed',
-          top: 0,
-          left: 0,
+          top: -4,
+          left: -4,
           width: 8,
           height: 8,
           borderRadius: '50%',
@@ -59,22 +61,22 @@ const CustomCursor = () => {
           pointerEvents: 'none',
           zIndex: 9998,
           mixBlendMode: 'screen',
+          opacity: isHovering ? 0 : 0.4,
+          transition: 'opacity 0.2s ease'
         }}
       />
 
       {/* Main cursor */}
       <motion.div
         animate={{
-          x: pos.x - (isHovering ? 20 : 8),
-          y: pos.y - (isHovering ? 20 : 8),
           scale: isHovering ? 1 : 1,
-          opacity: 1,
         }}
-        transition={{ type: 'spring', stiffness: 550, damping: 30, mass: 0.4 }}
         style={{
+          x: smoothX,
+          y: smoothY,
           position: 'fixed',
-          top: 0,
-          left: 0,
+          top: isHovering ? -20 : -8,
+          left: isHovering ? -20 : -8,
           width: isHovering ? 40 : 16,
           height: isHovering ? 40 : 16,
           borderRadius: '50%',
