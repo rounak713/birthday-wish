@@ -32,7 +32,7 @@ export const config = {
   // You can put your own .mp3 files in the "public" folder and link them here (e.g., "/my-song.mp3")
   sounds: {
     // Background music (loops automatically)
-    backgroundMusic: "/b.mp3",
+    backgroundMusic: "https://drive.google.com/file/d/1D5N8xxBlPAzzycgopPyz8L-VHDSOKTz8/view?usp=share_link",
     // Sound effect when a button is clicked
     click: "https://actions.google.com/sounds/v1/ui/pop_click.ogg",
     // Sound effect when a gift is opened
