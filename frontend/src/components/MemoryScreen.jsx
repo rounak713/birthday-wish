@@ -1,4 +1,80 @@
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+
+const TiltCard = ({ photo, index, rotation, yOffset }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      className="polaroid-card"
+      initial={{ opacity: 0, scale: 0.8, rotate: rotation - 10 }}
+      animate={{ opacity: 1, scale: 1, rotate: rotation, y: yOffset }}
+      transition={{ delay: 0.4 + (index * 0.2), type: "spring", bounce: 0.5 }}
+      whileHover={{ scale: 1.15, zIndex: 10 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+        backgroundColor: '#ffffff',
+        padding: '12px 12px 40px 12px',
+        borderRadius: '4px',
+        boxShadow: '0 25px 50px rgba(0,0,0,0.5)',
+        flexShrink: 0,
+        cursor: 'pointer'
+      }}
+    >
+      <div style={{ transform: "translateZ(30px)" }}>
+        <img 
+          src={photo.url} 
+          alt="Memory" 
+          className="polaroid-img"
+          style={{ 
+            width: '100%', 
+            objectFit: 'cover', 
+            borderRadius: '2px',
+            border: '1px solid #eee'
+          }}
+        />
+        {photo.caption && (
+          <p style={{
+            fontFamily: "'Dancing Script', cursive",
+            textAlign: 'center',
+            marginTop: '16px',
+            fontSize: '1.4rem',
+            color: '#333'
+          }}>
+            {photo.caption}
+          </p>
+        )}
+      </div>
+    </motion.div>
+  );
+};
 import { useConfig } from '../hooks/useConfig';
 import { useSound } from './SoundContext';
 
@@ -57,43 +133,14 @@ const MemoryScreen = ({ onNext }) => {
       </motion.h1>
 
       {/* 3 Polaroids */}
-      <div className="polaroid-container">
+      <div className="polaroid-container" style={{ perspective: 1200 }}>
         {config.memories.photos.slice(0, 3).map((photo, index) => {
-          // Calculate tilt: -8 deg for first, 0 for second, 8 for third
           const rotation = index === 0 ? -8 : index === 1 ? 0 : 8;
-          const yOffset = index === 1 ? -15 : 10; // Middle one slightly higher
-
-          return (
-            <motion.div
-              key={index}
-              className="polaroid-card"
-              initial={{ opacity: 0, scale: 0.8, rotate: rotation - 10 }}
-              animate={{ opacity: 1, scale: 1, rotate: rotation, y: yOffset }}
-              transition={{ delay: 0.4 + (index * 0.2), type: "spring", bounce: 0.5 }}
-              whileHover={{ scale: 1.1, zIndex: 10, rotate: 0 }}
-              style={{
-                backgroundColor: '#ffffff',
-                padding: '12px 12px 40px 12px',
-                borderRadius: '4px',
-                boxShadow: '0 15px 35px rgba(0,0,0,0.3)',
-                flexShrink: 0
-              }}
-            >
-              <img 
-                src={photo.url} 
-                alt="Memory" 
-                className="polaroid-img"
-                style={{ 
-                  width: '100%', 
-                  objectFit: 'cover', 
-                  borderRadius: '2px',
-                  border: '1px solid #eee'
-                }}
-              />
-            </motion.div>
-          );
+          const yOffset = index === 1 ? -15 : 10;
+          return <TiltCard key={index} photo={photo} index={index} rotation={rotation} yOffset={yOffset} />;
         })}
       </div>
+
 
       {/* Subtitle */}
       <motion.h2

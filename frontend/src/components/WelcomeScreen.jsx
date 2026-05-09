@@ -62,9 +62,12 @@ const WelcomeScreen = ({ onNext, onTrap }) => {
       >
         {/* Emoji mascot */}
         <motion.div
-          animate={{ y: [-8, 8, -8] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ fontSize: '72px', marginBottom: '24px', display: 'block', lineHeight: 1 }}
+          animate={{ y: [-8, 8, -8], scale: [1, 1.05, 1, 1.05, 1] }}
+          transition={{ 
+            y: { duration: 4, repeat: Infinity, ease: 'easeInOut' },
+            scale: { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+          }}
+          style={{ fontSize: '72px', marginBottom: '24px', display: 'block', lineHeight: 1, filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }}
         >
           {config.welcome?.image ? (
             <img
@@ -79,9 +82,12 @@ const WelcomeScreen = ({ onNext, onTrap }) => {
 
         {/* Question */}
         <motion.h1
-          initial={{ y: -10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } }
+          }}
           style={{
             fontFamily: "'Playfair Display', serif",
             fontSize: 'clamp(1.6rem, 4vw, 2.4rem)',
@@ -92,15 +98,28 @@ const WelcomeScreen = ({ onNext, onTrap }) => {
             backgroundClip: 'text',
             marginBottom: '12px',
             lineHeight: 1.25,
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: '8px'
           }}
         >
-          Are you ready for your surprise?
+          {(config.welcome?.title || 'Are you ready for your surprise?').split(' ').map((word, i) => (
+            <motion.span 
+              key={i} 
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} 
+              transition={{ type: 'spring', damping: 12, stiffness: 200 }}
+              style={{ display: 'inline-block' }}
+            >
+              {word}
+            </motion.span>
+          ))}
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.8 }}
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: '0.95rem',
@@ -109,7 +128,7 @@ const WelcomeScreen = ({ onNext, onTrap }) => {
             letterSpacing: '0.02em',
           }}
         >
-          Choose wisely... 😏
+          {config.welcome?.subtitle || 'Choose wisely... 😏'}
         </motion.p>
 
         {/* Buttons */}

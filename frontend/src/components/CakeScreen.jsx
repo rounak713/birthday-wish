@@ -51,6 +51,7 @@ const CakeScreen = ({ onNext }) => {
               boxShadow: '0 0 10px rgba(255,190,11,0.9), 0 0 20px rgba(255,107,0,0.5)',
               marginBottom: -2,
               cursor: 'pointer',
+              animation: 'flicker 0.15s infinite alternate'
             }}
             onClick={() => blowCandle(index)}
           />
@@ -176,6 +177,8 @@ const CakeScreen = ({ onNext }) => {
       <motion.div
         onClick={!allBlown ? handleBlowAll : undefined}
         whileHover={!allBlown ? { scale: 1.03 } : {}}
+        animate={allBlown ? { scale: [1, 1.15, 0.9, 1.05, 1], rotate: [0, -3, 3, -1, 0] } : {}}
+        transition={allBlown ? { duration: 0.7, type: 'spring' } : {}}
         style={{
           position: 'relative',
           cursor: allBlown ? 'default' : 'pointer',
@@ -290,18 +293,23 @@ const CakeScreen = ({ onNext }) => {
 
           {/* Hint text */}
           {!allBlown && (
-            <motion.p
+            <motion.div
               animate={{ opacity: [0.4, 0.8, 0.4] }}
               transition={{ duration: 2, repeat: Infinity }}
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '0.75rem',
-                color: 'rgba(255,255,255,0.4)',
-                letterSpacing: '0.05em',
-              }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}
             >
-              Tap candles or the cake to blow!
-            </motion.p>
+              <div style={{ animation: 'bounce-arrow 1s infinite', fontSize: '1.2rem', color: 'rgba(255,255,255,0.6)' }}>↓</div>
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.75rem',
+                  color: 'rgba(255,255,255,0.4)',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                Tap candles or the cake to blow!
+              </p>
+            </motion.div>
           )}
         </div>
       </motion.div>

@@ -241,8 +241,18 @@ const GiftScreen = ({ onNext }) => {
         {allOpened && (
           <motion.button
             initial={{ opacity: 0, y: 24, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.4, type: 'spring', bounce: 0.5 }}
+            animate={{ 
+              opacity: 1, y: 0, scale: 1,
+              boxShadow: [
+                '0 12px 40px rgba(255,107,157,0.45)',
+                '0 12px 60px rgba(255,107,157,0.85)',
+                '0 12px 40px rgba(255,107,157,0.45)'
+              ]
+            }}
+            transition={{ 
+              delay: 0.4, type: 'spring', bounce: 0.5,
+              boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' }
+            }}
             onClick={handleNext}
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
@@ -258,7 +268,6 @@ const GiftScreen = ({ onNext }) => {
               letterSpacing: '0.06em',
               textTransform: 'uppercase',
               cursor: 'pointer',
-              boxShadow: '0 12px 40px rgba(255,107,157,0.45)',
             }}
           >
             {config.gifts.continueButtonText} →
@@ -284,16 +293,18 @@ const GiftScreen = ({ onNext }) => {
               alignItems: 'center',
               justifyContent: 'center',
               padding: '24px',
+              perspective: 1000
             }}
           >
             <motion.div
               className="glass-card"
-              initial={{ scale: 0.8, y: 60, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.85, y: 40, opacity: 0 }}
-              transition={{ type: 'spring', bounce: 0.45 }}
+              initial={{ rotateX: 90, y: 60, opacity: 0 }}
+              animate={{ rotateX: 0, y: 0, opacity: 1 }}
+              exit={{ rotateX: -90, y: 40, opacity: 0 }}
+              transition={{ type: 'spring', bounce: 0.35, duration: 0.6 }}
               onClick={(e) => e.stopPropagation()}
               style={{
+                transformOrigin: "top center",
                 background: 'linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.05))',
                 backdropFilter: 'blur(30px)',
                 WebkitBackdropFilter: 'blur(30px)',

@@ -1,11 +1,35 @@
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useConfig } from '../hooks/useConfig';
 import { useSound } from './SoundContext';
 import { PartyPopper } from 'lucide-react';
+import { useEffect } from 'react';
 
 const HappyBirthdayScreen = ({ onNext }) => {
   const { config } = useConfig();
   const { playSound } = useSound();
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const xPct = (e.clientX / window.innerWidth) - 0.5;
+      const yPct = (e.clientY / window.innerHeight) - 0.5;
+      mouseX.set(xPct);
+      mouseY.set(yPct);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+
+  const foilX = useTransform(springX, [-0.5, 0.5], [30, -30]);
+  const foilY = useTransform(springY, [-0.5, 0.5], [30, -30]);
+  const p1X = useTransform(springX, [-0.5, 0.5], [-40, 40]);
+  const p1Y = useTransform(springY, [-0.5, 0.5], [-40, 40]);
+  const p2X = useTransform(springX, [-0.5, 0.5], [50, -50]);
+  const p2Y = useTransform(springY, [-0.5, 0.5], [50, -50]);
 
   const handleNext = () => {
     playSound('click');
@@ -21,7 +45,7 @@ const HappyBirthdayScreen = ({ onNext }) => {
       style={{
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#e0e5ec', // Light grayish blue paper color
+        backgroundColor: '#e0e5ec',
         backgroundImage: config.happyBirthday?.backgroundImage ? `url(${config.happyBirthday.backgroundImage})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -35,14 +59,12 @@ const HappyBirthdayScreen = ({ onNext }) => {
         overflow: 'hidden'
       }}
     >
-      {/* Decorative Blue Ripped Edges Simulation if no bg image provided */}
       {!config.happyBirthday?.backgroundImage && (
         <>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '10%', backgroundColor: '#6b8cae', clipPath: 'polygon(0% 0%, 100% 0%, 100% 80%, 95% 100%, 90% 70%, 85% 100%, 80% 80%, 75% 100%, 70% 75%, 65% 100%, 60% 80%, 55% 100%, 50% 70%, 45% 100%, 40% 80%, 35% 100%, 30% 75%, 25% 100%, 20% 80%, 15% 100%, 10% 70%, 5% 100%, 0% 80%)' }} />
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '10%', backgroundColor: '#6b8cae', clipPath: 'polygon(0% 100%, 100% 100%, 100% 20%, 95% 0%, 90% 30%, 85% 0%, 80% 20%, 75% 0%, 70% 25%, 65% 0%, 60% 20%, 55% 0%, 50% 30%, 45% 0%, 40% 20%, 35% 0%, 30% 25%, 25% 0%, 20% 20%, 15% 0%, 10% 30%, 5% 0%, 0% 20%)' }} />
           <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '5%', backgroundColor: '#6b8cae' }} />
           <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '5%', backgroundColor: '#6b8cae' }} />
-          {/* Subtle paper texture overlay */}
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url("https://www.transparenttextures.com/patterns/rice-paper-2.png")', opacity: 0.5, pointerEvents: 'none' }} />
         </>
       )}
@@ -57,10 +79,12 @@ const HappyBirthdayScreen = ({ onNext }) => {
           top: '12%',
           textAlign: 'center',
           width: '100%',
-          zIndex: 5
+          zIndex: 5,
+          x: foilX,
+          y: foilY
         }}
       >
-        <h1 style={{
+        <h1 className="floating" style={{
           fontFamily: "'Arial Rounded MT Bold', 'Inter', sans-serif",
           fontSize: 'clamp(2.5rem, 8vw, 5rem)',
           fontWeight: 900,
@@ -81,6 +105,7 @@ const HappyBirthdayScreen = ({ onNext }) => {
       <div style={{ position: 'relative', width: '300px', height: '400px', marginTop: '10%' }}>
         {/* Top Left Polaroid */}
         <motion.div
+          className="floating"
           initial={{ x: -100, y: -50, rotate: -20, opacity: 0 }}
           animate={{ x: -40, y: -20, rotate: -8, opacity: 1 }}
           transition={{ delay: 0.6, type: "spring" }}
@@ -91,7 +116,9 @@ const HappyBirthdayScreen = ({ onNext }) => {
             backgroundColor: '#fff',
             padding: '12px 12px 40px 12px',
             boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-            zIndex: 3
+            zIndex: 3,
+            x: p1X,
+            y: p1Y
           }}
         >
           <img 
@@ -103,6 +130,7 @@ const HappyBirthdayScreen = ({ onNext }) => {
 
         {/* Bottom Right Polaroid */}
         <motion.div
+          className="floating"
           initial={{ x: 100, y: 50, rotate: 20, opacity: 0 }}
           animate={{ x: 40, y: 60, rotate: 5, opacity: 1 }}
           transition={{ delay: 0.8, type: "spring" }}
@@ -113,7 +141,9 @@ const HappyBirthdayScreen = ({ onNext }) => {
             backgroundColor: '#fff',
             padding: '12px 12px 40px 12px',
             boxShadow: '0 15px 35px rgba(0,0,0,0.3)',
-            zIndex: 4
+            zIndex: 4,
+            x: p2X,
+            y: p2Y
           }}
         >
           <img 
